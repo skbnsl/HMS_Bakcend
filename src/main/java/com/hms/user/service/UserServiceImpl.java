@@ -30,17 +30,22 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public UserDTO loginUser(UserDTO userDTO) {
-        return null;
+    public UserDTO loginUser(UserDTO userDTO) throws HmsException {
+        User user= userRepository.findByEmail(userDTO.getEmail()).orElseThrow(()->new HmsException("User Not Found"));
+        if(!passwordEncoder.matches(user.getPassword(), user.getPassword())){
+            throw new HmsException("INVALID_CREDENTIALS");
+        }
+        //bcz password would not go to the frontend
+        user.setPassword(null);
+        return user.toDTO();
     }
 
     @Override
-    public UserDTO getUserById(Long id) {
-        return null;
+    public UserDTO getUserById(Long id) throws HmsException {
+        return userRepository.findById(id).orElseThrow(()->new HmsException("User Not Found")).toDTO();
     }
 
     @Override
-    public void updateUser(UserDTO userDTO) {
-
+    public void updateUser(UserDTO userDTO)  {
     }
 }
