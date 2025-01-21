@@ -23,7 +23,7 @@ public class UserServiceImpl implements UserService{
     public void registerUser(UserDTO userDTO) throws HmsException {
         Optional<User> opt = userRepository.findByEmail(userDTO.getEmail());
         if(opt.isPresent()){
-            throw new HmsException("User Already Exist");
+            throw new HmsException("USER_ALREADY_EXIST");
         }
         userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         userRepository.save(userDTO.toEntity());
@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public UserDTO loginUser(UserDTO userDTO) throws HmsException {
-        User user= userRepository.findByEmail(userDTO.getEmail()).orElseThrow(()->new HmsException("User Not Found"));
+        User user= userRepository.findByEmail(userDTO.getEmail()).orElseThrow(()->new HmsException("USER_NOT_FOUND"));
         if(!passwordEncoder.matches(user.getPassword(), user.getPassword())){
             throw new HmsException("INVALID_CREDENTIALS");
         }

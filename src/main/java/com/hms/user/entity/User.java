@@ -1,9 +1,5 @@
 package com.hms.user.entity;
 
-import com.hms.user.dto.Roles;
-import com.hms.user.dto.UserDTO;
-import jakarta.persistence.*;
-import lombok.*;
 
 /*
 * @Data will provide below four properties of lombok
@@ -11,9 +7,19 @@ import lombok.*;
  @Setter
 * */
 
-@Data
+import com.hms.user.dto.Roles;
+import com.hms.user.dto.UserDTO;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 @Entity
 public class User {
     @Id
@@ -24,6 +30,7 @@ public class User {
 
     @Column(unique = true)
     private String email;
+    //@Min(7 , message="")
     private String password;
     private Roles role;
 
