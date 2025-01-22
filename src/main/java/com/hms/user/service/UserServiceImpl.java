@@ -1,5 +1,6 @@
 package com.hms.user.service;
 
+import com.hms.user.dto.LoginDTO;
 import com.hms.user.dto.UserDTO;
 import com.hms.user.entity.User;
 import com.hms.user.exception.HmsException;
@@ -30,9 +31,9 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public UserDTO loginUser(UserDTO userDTO) throws HmsException {
+    public UserDTO loginUser(LoginDTO userDTO) throws HmsException {
         User user= userRepository.findByEmail(userDTO.getEmail()).orElseThrow(()->new HmsException("USER_NOT_FOUND"));
-        if(!passwordEncoder.matches(user.getPassword(), user.getPassword())){
+        if(!passwordEncoder.matches(userDTO.getPassword(), user.getPassword())){
             throw new HmsException("INVALID_CREDENTIALS");
         }
         //bcz password would not go to the frontend
@@ -47,5 +48,10 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public void updateUser(UserDTO userDTO)  {
+    }
+
+    @Override
+    public UserDTO getUser(String email) throws HmsException {
+        return userRepository.findByEmail(email).orElseThrow(()-> new HmsException("USER_NOT_FOUND")).toDTO();
     }
 }

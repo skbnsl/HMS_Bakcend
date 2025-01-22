@@ -1,5 +1,6 @@
 package com.hms.user.api;
 
+import com.hms.user.dto.LoginDTO;
 import com.hms.user.dto.ResponseDTO;
 import com.hms.user.dto.UserDTO;
 import com.hms.user.exception.HmsException;
@@ -33,7 +34,7 @@ public class UserAPI {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UserDTO> loginUser(@RequestBody UserDTO userDTO) throws HmsException{
+    public ResponseEntity<UserDTO> loginUser(@RequestBody @Valid LoginDTO userDTO) throws HmsException{
         UserDTO userDTO2 = userService.loginUser(userDTO);
         return new ResponseEntity<>(userDTO2,HttpStatus.CREATED);
     }
