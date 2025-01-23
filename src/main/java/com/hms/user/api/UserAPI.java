@@ -4,19 +4,29 @@ import com.hms.user.dto.LoginDTO;
 import com.hms.user.dto.ResponseDTO;
 import com.hms.user.dto.UserDTO;
 import com.hms.user.exception.HmsException;
+import com.hms.user.jwt.JwtUtil;
 import com.hms.user.service.UserService;
 
 import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties.Http;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping("/user")
@@ -27,6 +37,15 @@ public class UserAPI {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private UserDetailsService userDetailsService;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
     @PostMapping("/register")
     public ResponseEntity<ResponseDTO> registerUser(@RequestBody @Valid UserDTO userDTO) throws HmsException{
         userService.registerUser(userDTO);
@@ -34,9 +53,25 @@ public class UserAPI {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UserDTO> loginUser(@RequestBody @Valid LoginDTO userDTO) throws HmsException{
-        UserDTO userDTO2 = userService.loginUser(userDTO);
-        return new ResponseEntity<>(userDTO2,HttpStatus.CREATED);
+    public ResponseEntity<String> loginUser(@RequestBody @Valid LoginDTO loginDTO) throws HmsException{
+        // UserDTO userDTO2 = userService.loginUser(loginDTO);
+        // return new ResponseEntity<>(userDTO2,HttpStatus.CREATED);
+        try{
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken
+                                        (loginDTO.getEmail(), loginDTO.getPassword()));
+        } catch(AuthenticationException e){
+            throw new HmsException("INVALID_CREDENTIALS");
+        }
+
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(loginDTO.getEmail());
+        final String jwt = jwtUtil.generateToken(userDetails);
+        return new ResponseEntity<>(jwt,HttpStatus.OK);
     }
+
+    @GetMapping("/test")
+    public ResponseEntity<String> test() {
+        return new ResponseEntity<>("Test",HttpStatus.OK);
+    }
+    
 
 }

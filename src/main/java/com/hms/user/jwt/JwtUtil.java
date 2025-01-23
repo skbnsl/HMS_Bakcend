@@ -19,12 +19,17 @@ public class JwtUtil {
     public String generateToken(UserDetails userDetails) {
         Map<String,Object> claims = new HashMap<>();
         CustomUserDetails user = (CustomUserDetails)userDetails;
+        claims.put("id", user.getId());
+        claims.put("email", user.getEmail());
+        claims.put("role", user.getRole());
+        claims.put("name", user.getName());
+        return doGenerateToken(claims, user.getUsername());
     }
 
     public String doGenerateToken(Map<String,Object> claims, String subject){//subject = email
         return Jwts.builder().setClaims(claims).setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis())+JWT_TOKEN_VALIDITY*1000)
+                .setExpiration(new Date(System.currentTimeMillis()+JWT_TOKEN_VALIDITY*1000))
                 .signWith(SignatureAlgorithm.HS512, SECRET).compact();
     }
 
