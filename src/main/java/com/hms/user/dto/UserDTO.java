@@ -4,7 +4,6 @@ import com.hms.user.entity.User;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,9 +27,10 @@ public class UserDTO {
     @NotBlank(message = "password is mandatory")
     private String password;
     private Roles role;
+    private Long profileId;
 
     public User toEntity(){
-        return new User(this.id,this.name,this.email,this.password,this.role);
+        return new User(this.id,this.name,this.email,this.password,this.role,this.profileId);
     }
 
 }

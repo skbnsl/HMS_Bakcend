@@ -10,7 +10,6 @@ package com.hms.user.entity;
 import com.hms.user.dto.Roles;
 import com.hms.user.dto.UserDTO;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,8 +33,10 @@ public class User {
     private String password;
     private Roles role;
 
+    private Long profileId;
+
     public UserDTO toDTO(){
-        return new UserDTO(this.id,this.name,this.email,this.password,this.role);
+        return new UserDTO(this.id,this.name,this.email,this.password,this.role,this.profileId);
     }
 
 }

@@ -8,12 +8,13 @@ import com.hms.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service("UserService")
+@Transactional
 public class UserServiceImpl implements UserService{
 
     @Autowired
@@ -21,6 +22,9 @@ public class UserServiceImpl implements UserService{
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private ApiService apiService;
 
     private static final Logger logger = LogManager.getLogger(UserServiceImpl.class);
 
@@ -32,6 +36,9 @@ public class UserServiceImpl implements UserService{
             throw new HmsException("USER_ALREADY_EXIST");
         }
         userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        Long profileId = apiService.addProfile(userDTO).block();
+        System.out.println(profileId);
+        userDTO.setProfileId(profileId);
         userRepository.save(userDTO.toEntity());
         logger.debug("User {} registration Successful",userDTO);
     }
